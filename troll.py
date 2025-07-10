@@ -1,1 +1,0 @@
-print("get a life losers")
