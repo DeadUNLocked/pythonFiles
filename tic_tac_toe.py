@@ -1,91 +1,89 @@
-import random
-
 def print_board(board):
     print("+---+---+---+")
     for i in range(3):
-        row = f"| {board[i*3]} | {board[i*3+1]} | {board[i*3+2]} |"
-        print(row)
+        row = " | ".join(board[i*3:(i+1)*3])
+        print(f"| {row} |")
         print("+---+---+---+")
 
-def check_winner(board, player):
-    win_combinations = [
-        [0, 1, 2], [3, 4, 5], [6, 7, 8],  # Rows
-        [0, 3, 6], [1, 4, 7], [2, 5, 8],  # Columns
-        [0, 4, 8], [2, 4, 6]              # Diagonals
+def check_win(board, player):
+    win_conditions = [
+        [0,1,2], [3,4,5], [6,7,8],  # rows
+        [0,3,6], [1,4,7], [2,5,8],  # collumns
+        [0,4,8], [2,4,6]            # diagonals
     ]
-    return any(all(board[i] == player for i in combo) for combo in win_combinations)
+    return any(all(board[pos] == player for pos in combo) for combo in win_conditions)
 
-def available_moves(board):
-    return [i for i, spot in enumerate(board) if spot not in ['X', 'O']]
+def check_draw(board):
+    return all(space in ["X", "O"] for space in board)
 
-def bot_move_easy(board):
-    return random.choice(available_moves(board))
+def get_valid_moves(board):
+    return [i for i, spot in enumerate(board) if spot not in ["X", "O"]]
 
-def bot_move_hard(board, bot, human):
-    # Try to win
-    for move in available_moves(board):
-        copy = board[:]
-        copy[move] = bot
-        if check_winner(copy, bot):
+def bot_move(board):
+    # Bot tries to win
+    for move in get_valid_moves(board):
+        board_copy = board[:]
+        board_copy[move] = "O"
+        if check_win(board_copy, "O"):
             return move
-    # Try to block human
-    for move in available_moves(board):
-        copy = board[:]
-        copy[move] = human
-        if check_winner(copy, human):
+    # Bot tries to block player
+    for move in get_valid_moves(board):
+        board_copy = board[:]
+        board_copy[move] = "X"
+        if check_win(board_copy, "X"):
             return move
-    # Take center if available
-    if board[4] not in ['X', 'O']:
+    # Take center if free
+    if 4 in get_valid_moves(board):
         return 4
-    # Take a corner if available
+    # Take corners if free
     for move in [0, 2, 6, 8]:
-        if board[move] not in ['X', 'O']:
+        if move in get_valid_moves(board):
             return move
-    # Else, pick random
-    return bot_move_easy(board)
+    # Take sides
+    for move in [1, 3, 5, 7]:
+        if move in get_valid_moves(board):
+            return move
 
-def bot_move(board, bot, human):
-    difficulty = random.choice(['easy', 'medium', 'hard'])
-    print(f"[Bot difficulty: {difficulty.upper()}]")
-    if difficulty == 'easy':
-        return bot_move_easy(board)
-    elif difficulty == 'medium':
-        return bot_move_hard(board, bot, human) if random.random() > 0.5 else bot_move_easy(board)
-    else:
-        return bot_move_hard(board, bot, human)
-
-def play_game():
-    board = [str(i+1) for i in range(9)]  # Numbered initial board
-    human = 'X'
-    bot = 'O'
-    current = human if random.choice([True, False]) else bot
-    print(f"You are {human}. Bot is {bot}.\n")
-
-    for _ in range(9):
-        print_board(board)
-        if current == human:
-            while True:
-                try:
-                    move = int(input("Choose a position (1-9): ")) - 1
-                    if move in available_moves(board):
-                        board[move] = human
-                        break
-                    else:
-                        print("Invalid or occupied position.")
-                except ValueError:
-                    print("Enter a valid number from 1 to 9.")
-        else:
-            move = bot_move(board, bot, human)
-            print(f"Bot chooses {move + 1}")
-            board[move] = bot
-
-        if check_winner(board, current):
-            print_board(board)
-            print(f"{'You win!' if current == human else 'Bot wins!'}")
-            return
-        current = bot if current == human else human
-
+def main():
+    # Initialize board with numbers 1-9 for display and input reference
+    board = [str(i) for i in range(1, 10)]
+    print("Welcome to Tic-Tac-Toe!")
+    print("You are X, the bot is O.")
+    print("Pick a number 1-9 to place your X on the board.")
     print_board(board)
-    print("It's a draw!")
 
-play_game()
+    while True:
+        # Player move
+        valid_moves = get_valid_moves(board)
+        while True:
+            try:
+                player_move = int(input("Your move (1-9): ")) - 1
+                if player_move in valid_moves:
+                    board[player_move] = "X"
+                    break
+                else:
+                    print("Invalid move. That spot is taken or out of range.")
+            except ValueError:
+                print("Please enter a number from 1 to 9.")
+
+        print_board(board)
+        if check_win(board, "X"):
+            print("You won!")
+            break
+        if check_draw(board):
+            print("It's a draw!")
+            break
+
+        # Bot move
+        bot_choice = bot_move(board)
+        board[bot_choice] = "O"
+        print(f"Bot moves to position {bot_choice + 1}:")
+        print_board(board)
+        if check_win(board, "O"):
+            print("You lost!")
+            break
+        if check_draw(board):
+            print("It's a draw!")
+            break
+
+if __name__ == "__main__":
