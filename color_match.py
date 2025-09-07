@@ -6,9 +6,8 @@ users = [
     ["Ryan", "blue"]
 ]
 
-print(users[0][1])
-print(users[2][0])
 
+matched = False
 
 name = input("Please enter your name: ")
 print(f"Hello, {name}!")
@@ -18,7 +17,13 @@ print(f"Your favorite color is {color}.")
 
 index = 0
 
-while index < len(users): # Check against the *current* length
-  if color == users[index][1]:
-    print(f"Your favorite colors are identical to {users[index][0]}.")
-    break
+while index < len(users):
+    if color == users[index][1]:
+        print(f"Your favorite colors are identical to {users[index][0]}.")
+        matched = True
+        break
+    index += 1
+
+if matched == False:
+   print("Match not found")
+        
