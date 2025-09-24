@@ -8,7 +8,7 @@ def print_board(board):
 def check_win(board, player):
     win_conditions = [
         [0,1,2], [3,4,5], [6,7,8],  # rows
-        [0,3,6], [1,4,7], [2,5,8],  # collumns
+        [0,3,6], [1,4,7], [2,5,8],  # columns
         [0,4,8], [2,4,6]            # diagonals
     ]
     return any(all(board[pos] == player for pos in combo) for combo in win_conditions)
