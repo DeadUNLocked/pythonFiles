@@ -5,6 +5,7 @@ def print_board(board):
         print(f"| {row} |")
         print("+---+---+---+")
 
+
 def check_win(board, player):
     win_conditions = [
         [0,1,2], [3,4,5], [6,7,8],  # rows
@@ -13,11 +14,14 @@ def check_win(board, player):
     ]
     return any(all(board[pos] == player for pos in combo) for combo in win_conditions)
 
+
 def check_draw(board):
     return all(space in ["X", "O"] for space in board)
 
+
 def get_valid_moves(board):
     return [i for i, spot in enumerate(board) if spot not in ["X", "O"]]
+
 
 def bot_move(board):
     # Bot tries to win
@@ -43,6 +47,7 @@ def bot_move(board):
     for move in [1, 3, 5, 7]:
         if move in get_valid_moves(board):
             return move
+
 
 def main():
     # Initialize board with numbers 1-9 for display and input reference
@@ -85,6 +90,7 @@ def main():
         if check_draw(board):
             print("It's a draw!")
             break
+
 
 if __name__ == "__main__":
     main()
