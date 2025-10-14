@@ -49,10 +49,10 @@ def bot_move(board):
             return move
 
 
-def main():
-    # Initialize board with numbers 1-9 for display and input reference
+def play_game():
+    # Initialize board
     board = [str(i) for i in range(1, 10)]
-    print("Welcome to Tic-Tac-Toe!")
+    print("\nWelcome to Tic-Tac-Toe!")
     print("You are X, the bot is O.")
     print("Pick a number 1-9 to place your X on the board.")
     print_board(board)
@@ -73,7 +73,7 @@ def main():
 
         print_board(board)
         if check_win(board, "X"):
-            print("You won!")
+            print("You win!")
             break
         if check_draw(board):
             print("It's a draw!")
@@ -85,10 +85,19 @@ def main():
         print(f"Bot moves to position {bot_choice + 1}:")
         print_board(board)
         if check_win(board, "O"):
-            print("You lost!")
+            print("You lose!")
             break
         if check_draw(board):
             print("It's a draw!")
+            break
+
+
+def main():
+    while True:
+        play_game()
+        again = input("\nPlay again? (y/n): ").strip().lower()
+        if again not in ("y", "yes"):
+            print("Thanks for playing Tic-Tac-Toe! Goodbye!")
             break
 
 
